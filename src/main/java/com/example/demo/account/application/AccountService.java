@@ -10,6 +10,12 @@ import com.example.demo.account.domain.Email;
 import com.example.demo.account.dto.AccountDto;
 import com.example.demo.account.exception.AccountNotFoundException;
 import com.example.demo.account.exception.EmailDuplicationException;
+import com.example.demo.account.exception.LoginFailedException;
+import com.example.demo.security.JwtTokenProvider;
+import com.example.demo.user.application.UserService;
+
+import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
@@ -18,7 +24,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AccountService {
 
+  private final JwtTokenProvider jwtTokenProvider;
   private final AccountRepository accountRepository;
+  private final UserService userService;
+  
 
   @Transactional(readOnly = true)
   public Account findById(long id) {
@@ -40,7 +49,23 @@ public class AccountService {
   public Account create(AccountDto.SignUpReq dto) {
     if (isExistedEmail(dto.getEmail()))
         throw new EmailDuplicationException(dto.getEmail());
-    return accountRepository.save(dto.toEntity());
+      
+    Account account = accountRepository.save(dto.toEntity());
+    userService.create(account.getId());
+    return account;
+  }
+
+  public String login(AccountDto.LoginReq dto) {
+    final Account account = findByEmail(dto.getEmail());
+    
+    if(!account.getPassword().isMatched(dto.getPassword())){
+      throw new LoginFailedException();
+    }
+
+    List<String> roles = new ArrayList<>();
+    roles.add("USER");
+
+    return jwtTokenProvider.createToken(String.valueOf(account.getId()), roles);
   }
 
 }

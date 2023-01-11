@@ -12,21 +12,27 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.account.application.AccountService;
 import com.example.demo.account.dao.AccountRepository;
 import com.example.demo.account.dto.AccountDto;
-import com.example.demo.account.dto.AccountDto.Res;
+import com.example.demo.account.dto.AccountDto.LoginRes;
+import com.example.demo.account.dto.AccountDto.SignUpRes;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("accounts")
+@RequestMapping("auth")
 @RequiredArgsConstructor
 public class AccountController {
   private final AccountService accountService;
   private final AccountRepository accountRepository;
 
-  @PostMapping
+  @PostMapping("/signup")
   @ResponseStatus(value = HttpStatus.CREATED)
-  public Res signUp(@RequestBody @Valid final AccountDto.SignUpReq dto) {
-    return new AccountDto.Res(accountService.create(dto));
+  public SignUpRes signUp(@RequestBody @Valid final AccountDto.SignUpReq dto) {
+    return new AccountDto.SignUpRes(accountService.create(dto));
   }
 
+  @PostMapping("/login")
+  @ResponseStatus(value = HttpStatus.ACCEPTED)
+  public LoginRes login(@RequestBody @Valid final AccountDto.LoginReq dto) {
+    return new AccountDto.LoginRes(accountService.login(dto));
+  }
 }

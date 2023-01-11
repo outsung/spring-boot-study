@@ -15,7 +15,7 @@ import org.springframework.validation.FieldError;
 
 import com.example.demo.account.exception.AccountNotFoundException;
 import com.example.demo.account.exception.EmailDuplicationException;
-
+import com.example.demo.account.exception.LoginFailedException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,6 +57,15 @@ public class ErrorExceptionController {
     log.error(errorCode.getMessage(), e.getEmail() + e.getField());
     return buildError(errorCode);
   }
+
+  @ExceptionHandler(LoginFailedException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected ErrorResponse handleLoginFailedException(LoginFailedException e) {
+    final ErrorCode errorCode = ErrorCode.LOGIN_FAILED_EXCEEDED;
+    log.error(errorCode.getMessage());
+    return buildError(errorCode);
+  }
+
 
   @ExceptionHandler(DataIntegrityViolationException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)

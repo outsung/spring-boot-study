@@ -1,6 +1,8 @@
 package com.example.demo.account.dto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import com.example.demo.account.domain.Account;
 import com.example.demo.account.domain.Email;
@@ -36,13 +38,37 @@ public class AccountDto {
   }
 
   @Getter
-  public static class Res {
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  public static class LoginReq {
+
+    @Valid
+    private Email email;
+    private String password;
+
+    @Builder
+    public LoginReq(Email email, String password) {
+      this.email = email;
+      this.password = password;
+    }
+  }
+
+  @Getter
+  public static class SignUpRes {
     private Email email;
     private Password password;
 
-    public Res(Account account) {
+    public SignUpRes(Account account) {
         this.email = account.getEmail();
         this.password = account.getPassword();
+    }
+  }
+
+  @Getter
+  public static class LoginRes {
+    private String token;
+
+    public LoginRes(String token) {
+      this.token = token;
     }
   }
 }
