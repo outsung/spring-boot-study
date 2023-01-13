@@ -21,7 +21,6 @@ public class UserService {
     return userRepository.findByAccountId(accountId).orElseThrow(() -> new AccountNotFoundException(accountId));
   }
 
-  @Transactional(readOnly = true)
   public User create(long accountId) {
 
     return userRepository.save(

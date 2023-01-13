@@ -26,8 +26,6 @@ public class AccountService {
 
   private final JwtTokenProvider jwtTokenProvider;
   private final AccountRepository accountRepository;
-  private final UserService userService;
-  
 
   @Transactional(readOnly = true)
   public Account findById(long id) {
@@ -51,19 +49,18 @@ public class AccountService {
         throw new EmailDuplicationException(dto.getEmail());
       
     Account account = accountRepository.save(dto.toEntity());
-    userService.create(account.getId());
     return account;
   }
 
   public String login(AccountDto.LoginReq dto) {
     final Account account = findByEmail(dto.getEmail());
     
-    if(!account.getPassword().isMatched(dto.getPassword())){
+    if(!account.getPasswordTPassword().isPasswordMatched(dto.getPassword())){
       throw new LoginFailedException();
     }
 
     List<String> roles = new ArrayList<>();
-    roles.add("USER");
+    roles.add("ROLE_USER");
 
     return jwtTokenProvider.createToken(String.valueOf(account.getId()), roles);
   }

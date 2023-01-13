@@ -28,9 +28,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     .and()
         .authorizeRequests()
             .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-            .antMatchers("/auth/**", "/auth/**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
-            .antMatchers(HttpMethod.GET, "/exception/**", "/helloworld/**","/actuator/health", "/favicon.ico").permitAll() // 등록된 GET요청 리소스는 누구나 접근가능
-            .antMatchers(HttpMethod.POST, "/*/board/*").hasRole("ADMIN")
+            .antMatchers("/signup", "/login").permitAll() // 가입 및 인증 주소는 누구나 접근가능
+            .antMatchers("/admin/**", "/admin/**").hasRole("ADMIN")
             .anyRequest().hasRole("USER") // 그외 나머지 요청은 모두 인증된 회원만 접근 가능
     .and()
         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // jwt token 필터를 id/password 인증 필터 전에 넣어라.

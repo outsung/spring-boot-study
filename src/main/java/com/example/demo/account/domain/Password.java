@@ -22,12 +22,12 @@ public class Password {
     this.value = encodePassword(value);
   }
   
-  public boolean isMatched(final String rawPassword) {
+  public boolean isPasswordMatched(final String rawPassword) {
     return isMatches(rawPassword);
   }
 
   public void changePassword(final String newPassword, final String oldPassword) {
-    if (isMatched(oldPassword)) {
+    if (isPasswordMatched(oldPassword)) {
       this.value = encodePassword(newPassword);
     }
   }

@@ -18,10 +18,13 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class JwtTokenProvider {
 
   @Value("${spring.jwt.secret}")
@@ -49,25 +52,36 @@ public class JwtTokenProvider {
   }
 
   public Authentication getAuthentication(String token) {
-      UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
-      return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    log.info("PK = " + this.getUserPk(token));
+    UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
+    log.info("name = " + userDetails.getUsername() + ", password = " + userDetails.getPassword());
+    return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 
   public String getUserPk(String token) {
-      return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    String subject = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    
+
+    return subject;
   }
 
   public String resolveToken(HttpServletRequest req) {
-      return req.getHeader("Authorization");
+    
+    String token = req.getHeader("Authorization");
+    if(token != null && token.startsWith("Bearer ")){
+      return token.substring(7);
+    }
+
+    return null;
   }
 
   public boolean validateToken(String jwtToken) {
-      try {
-          Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-          return !claims.getBody().getExpiration().before(new Date());
-      } catch (Exception e) {
-          return false;
-      }
+    try {
+      Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+      return !claims.getBody().getExpiration().before(new Date());
+    } catch (Exception e) {
+      return false;
+    }
   }
 
 }

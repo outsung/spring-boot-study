@@ -59,7 +59,7 @@ public class AccountDto {
 
     public SignUpRes(Account account) {
         this.email = account.getEmail();
-        this.password = account.getPassword();
+        this.password = account.getPasswordTPassword();
     }
   }
 

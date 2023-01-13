@@ -13,16 +13,20 @@ import com.example.demo.user.domain.User;
 import com.example.demo.user.dto.UserDto.Res;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
   private final UserService userService;
 
   @GetMapping("/me")
   @ResponseStatus(value = HttpStatus.OK)
   public Res me() {
+    log.info("users/me called !");
+    
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     long id = Long.parseLong(authentication.getName());
 
